@@ -42,7 +42,7 @@ class MailListRSS:
         messages = (
             self.client.users[self.configuration["inbox"]]
             .mail_folders[self.configuration["folder_id"]]
-            .messages.get_all()
+            .messages.get()
             .execute_query()
         )
         rss_feed = FeedGenerator()
