@@ -8,6 +8,7 @@ class MailListRSS:
 
         if method == "office365":
             self.__setup_office365__()
+            self.__poll_office365__()
 
     def __setup_office365__(self):
         self.client = GraphClient.with_client_secret(
@@ -15,3 +16,12 @@ class MailListRSS:
             client_id=self.configuration["client_id"],
             client_secret=self.configuration["client_secret"],
         )
+
+    def __poll_office365__(self):
+        messages = (
+            self.client.users[self.configuration["inbox"]]
+            .messages.get()
+            .top(10)
+            .execute_query()
+        )
+        print(messages)
