@@ -19,29 +19,12 @@ class MailListRSS:
         )
 
     def __poll_office365__(self):
-        # messages = (
-        #     self.client.users[self.configuration["inbox"]]
-        #     .messages.get()
-        #     # .filter("ccRecipients/any(i:i ')")
-        #     .filter("startswith(subject, '[DNSOP]')")
-        #     .top(1)
-        #     .execute_query()
-        # )
-        # messages = (
-        #     self.client.users[self.configuration["inbox"]]
-        #     .mail_folders[
-        #         "AAMkADcxYzY4ODFkLTY1MDYtNGMyNi04MmNmLTg4YTU0Mjg3OGJmYgAuAAAAAABiSP8jCFYLSZrBWYpeHWpYAQBbd8M1_CGsQ63mmDqKE8XTAAPDml8ZAAA="
-        #     ]
-        #     .child_folders.get_all()
-        #     .execute_query()
-        # )
         messages = (
             self.client.users[self.configuration["inbox"]]
-            .mail_folders[
-                "AAMkADcxYzY4ODFkLTY1MDYtNGMyNi04MmNmLTg4YTU0Mjg3OGJmYgAuAAAAAABiSP8jCFYLSZrBWYpeHWpYAQBbd8M1_CGsQ63mmDqKE8XTAAPDml8aAAA="
-            ]
-            .messages.get()
+            .mail_folders[self.configuration["folder_id"]]
+            .messages.get_all()
             .execute_query()
         )
 
-        print(messages.to_json())
+        for message in messages:
+            print(message.subject)
