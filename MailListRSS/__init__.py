@@ -2,7 +2,8 @@ from office365.graph_client import GraphClient
 from pprint import pprint
 from feedgen.feed import FeedGenerator
 import datetime
-import pytz
+import html
+import markdown
 
 
 class MailListRSS:
@@ -47,7 +48,10 @@ class MailListRSS:
             rss_entry.pubDate(
                 message.created_datetime.replace(tzinfo=datetime.timezone.utc)
             )
-            rss_entry.content(str(message.body))
+            if message.body.contentType == "text":
+                rss_entry.content(markdown.markdown(str(message.body.content)))
+            else:
+                rss_entry.content(str(message.body.content))
             rss_entry.category({"term": mailingListTopic})
             rss_entry.author = {
                 "name": message.sender.emailAddress.name,
@@ -55,28 +59,28 @@ class MailListRSS:
             }
             rss_entry.summary = str(message.body_preview)
 
-            # contributors = []
-            # contributors.append(
-            #     {
-            #         "name": message.sender.emailAddress.name,
-            #         "email": message.sender.emailAddress.address,
-            #     }
-            # )
-            # for contributor in message.to_recipients:
-            #     contributors.append(
-            #         {
-            #             "name": contributor.emailAddress.name,
-            #             "email": contributor.emailAddress.address,
-            #         }
-            #     )
-            # for contributor in message.cc_recipients:
-            #     contributors.append(
-            #         {
-            #             "name": contributor.emailAddress.name,
-            #             "email": contributor.emailAddress.address,
-            #         }
-            #     )
-            # rss_entry.contributors = contributors
+            contributors = []
+            contributors.append(
+                {
+                    "name": message.sender.emailAddress.name,
+                    "email": message.sender.emailAddress.address,
+                }
+            )
+            for contributor in message.to_recipients:
+                contributors.append(
+                    {
+                        "name": contributor.emailAddress.name,
+                        "email": contributor.emailAddress.address,
+                    }
+                )
+            for contributor in message.cc_recipients:
+                contributors.append(
+                    {
+                        "name": contributor.emailAddress.name,
+                        "email": contributor.emailAddress.address,
+                    }
+                )
+            rss_entry.contributor(contributors)
             # print(rss_entry.__dict__)
             # print(mailingListTopic)
             # print(mailingListSubject)
@@ -85,5 +89,5 @@ class MailListRSS:
         rss_feed.description("...")
         rss_feed.link({"href": "dingo.foo"})
         rssfeed = rss_feed.rss_str(pretty=True)
-        print(rssfeed)
+        # print(rssfeed)
         rssfeed_file = rss_feed.rss_file("mailing-list.rss")
