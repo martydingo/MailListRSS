@@ -22,9 +22,27 @@ class MailListRSS:
         messages = (
             self.client.users[self.configuration["inbox"]]
             .mail_folders[self.configuration["folder_id"]]
-            .messages.get_all()
+            .messages.get()
             .execute_query()
         )
 
         for message in messages:
-            print(message.subject)
+            try:
+                mailingListSubjectList = message.subject.split("[")[1].split("]")
+                mailingListTopic = mailingListSubjectList[0]
+                mailingListSubject = (
+                    mailingListSubjectList[1].replace("Re:", "").strip()
+                )
+            except:
+                mailingListTopic = "Unknown"
+                mailingListSubject = message.subject
+
+            id = message.webLink
+            title = mailingListSubject
+            subtitle = mailingListTopic
+            auther = {
+                "name": message.sender.emailAddress.name,
+                "email": message.sender.emailAddress.address,
+            }
+            # print(mailingListTopic)
+            # print(mailingListSubject)
