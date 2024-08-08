@@ -61,7 +61,7 @@ class MailListRSS:
 
             rss_entry.id(message.web_link)
             rss_entry.link({"href": message.web_link})
-            rss_entry.title(f"[{mailingListTopic}] {mailingListSubject}")
+            rss_entry.title(message.subject)
             rss_entry.pubDate(
                 message.created_datetime.replace(tzinfo=datetime.timezone.utc)
             )
