@@ -2,8 +2,24 @@ from office365.graph_client import GraphClient
 from pprint import pprint
 from feedgen.feed import FeedGenerator
 import datetime
-import html
 import markdown
+import datetime
+import time
+import asyncio
+from fastapi import Response, FastAPI
+from yaml import safe_load
+
+# from .API
+
+app = FastAPI()
+
+
+@app.get("/")
+async def root():
+    configuration = safe_load(open("config.yaml"))
+    mailListRSS = MailListRSS(configuration)
+    rssfeed = open("mailing-list.rss")
+    return Response(content=rssfeed.read(), media_type="application/xml")
 
 
 class MailListRSS:
@@ -26,7 +42,7 @@ class MailListRSS:
         messages = (
             self.client.users[self.configuration["inbox"]]
             .mail_folders[self.configuration["folder_id"]]
-            .messages.get()
+            .messages.get_all()
             .execute_query()
         )
         rss_feed = FeedGenerator()
@@ -44,7 +60,7 @@ class MailListRSS:
 
             rss_entry.id(message.web_link)
             rss_entry.link({"href": message.web_link})
-            rss_entry.title(mailingListSubject)
+            rss_entry.title(f"[{mailingListTopic}] {mailingListSubject}")
             rss_entry.pubDate(
                 message.created_datetime.replace(tzinfo=datetime.timezone.utc)
             )
@@ -91,3 +107,4 @@ class MailListRSS:
         rssfeed = rss_feed.rss_str(pretty=True)
         # print(rssfeed)
         rssfeed_file = rss_feed.rss_file("mailing-list.rss")
+        print(rssfeed)

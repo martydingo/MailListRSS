@@ -3,3 +3,4 @@ pyyaml
 feedgen
 fastapi
 markdown
+uvicorn
