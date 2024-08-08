@@ -11,7 +11,7 @@ class MailListRSS:
 
     def __setup_office365__(self):
         self.client = GraphClient.with_client_secret(
-            tenant=self.configuration["tenant_id"]
-            client_id=self.configuration["client_id"]
-            client_secret=self.configuration["client_secret"]
+            tenant=self.configuration["tenant_id"],
+            client_id=self.configuration["client_id"],
+            client_secret=self.configuration["client_secret"],
         )
